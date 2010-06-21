@@ -2,7 +2,7 @@ package nl.flotsam.greader;
 
 /**
  * A convenience class, hiding too much complexity, but sometimes that's just all you can do. (Especially if you want to
- * call methods from XSLT.)
+ * call methods from XSLT.) Don't expect this class to survive eventually.
  */
 public class ReaderClient {
 
