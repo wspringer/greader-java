@@ -16,8 +16,8 @@
 package nl.flotsam.greader;
 
 import nl.flotsam.greader.http.GsonHttpMessageConverter;
-import nl.flotsam.greader.http.TracingClientHttpRequestFactory;
 import nl.flotsam.greader.http.PropertiesHttpMessageConverter;
+import nl.flotsam.greader.http.TracingClientHttpRequestFactory;
 import nl.flotsam.greader.rest.RestInvoker;
 import nl.flotsam.greader.struct.SubscribeResponse;
 import org.springframework.http.HttpMethod;
@@ -34,6 +34,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static nl.flotsam.greader.rest.RestInvoker.preparePostTo;
 
+/**
+ * An implementation of {@link nl.flotsam.greader.ReaderOperations} managing authentication for its clients. 
+ */
 public class ReaderTemplate implements ReaderOperations {
 
     private final String email;
@@ -46,6 +49,13 @@ public class ReaderTemplate implements ReaderOperations {
     private final static String EDIT_URL = BASE_URL + "subscription/edit";
     private final AtomicReference<String> auth = new AtomicReference<String>();
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param email    The email address of the account to manage.
+     * @param password The password.
+     * @param tracing  A boolean indicating if tracing should be enabled.
+     */
     public ReaderTemplate(String email, String password, boolean tracing) {
         this.password = password;
         this.email = email;
@@ -60,6 +70,12 @@ public class ReaderTemplate implements ReaderOperations {
         restTemplate.setMessageConverters(converters);
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param email    The email address of the account to manage.
+     * @param password The password.
+     */
     public ReaderTemplate(String email, String password) {
         this(email, password, false);
     }
@@ -83,7 +99,7 @@ public class ReaderTemplate implements ReaderOperations {
     }
 
     @Override
-    public boolean subscribe(final String feed, final String title, final String token) {
+    public boolean subscribe(final String feed, final String token) {
         return doWithCallback(new ReaderCallback<Boolean>() {
             @Override
             public Boolean execute(RestOperations operations) {
@@ -115,7 +131,7 @@ public class ReaderTemplate implements ReaderOperations {
                 return "OK".equals(result);
             }
         });
-        
+
     }
 
     private void updateAuth() {
@@ -134,7 +150,7 @@ public class ReaderTemplate implements ReaderOperations {
                 .withParam("service", "reader")
                 .withParam("source", "flotsam-greader-java-1.0")
                 .execute();
-        return (String) result.get("Auth");  
+        return (String) result.get("Auth");
     }
 
     private class AuthenticatingRestTemplate extends RestTemplate {
@@ -149,7 +165,7 @@ public class ReaderTemplate implements ReaderOperations {
                     }
                     requestCallback.doWithRequest(request);
                 }
-            }, responseExtractor);    //To change body of overridden methods use File | Settings | File Templates.
+            }, responseExtractor);
         }
     }
 

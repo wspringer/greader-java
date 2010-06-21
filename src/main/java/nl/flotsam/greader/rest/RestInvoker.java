@@ -21,17 +21,27 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * A simple wrapper around RestTemplate, providing the illusion of a more fluent interface. Typically used like this:
+ * <pre>
+ * RestInvoker.preparePostTo(uri)
+ *            .expecting(String.class)
+ *            .withParam("foo", "bar")
+ *            .execute();
+ * </pre>
+ * <p/> <p>For now, mostly useful for doing POSTs.</p>
+ */
 public class RestInvoker {
 
     private final HttpMethod method;
     private final String uri;
     private final RestOperations operations;
 
-    public RestInvoker(HttpMethod method, String uri) {
+    private RestInvoker(HttpMethod method, String uri) {
         this(method, uri, new RestTemplate());
     }
 
-    public RestInvoker(HttpMethod method, String uri, RestOperations operations) {
+    private RestInvoker(HttpMethod method, String uri, RestOperations operations) {
         this.method = method;
         this.uri = uri;
         this.operations = operations;
@@ -41,10 +51,16 @@ public class RestInvoker {
         return new RestInvoker(HttpMethod.POST, uri);
     }
 
-    public RestInvoker using(RestOperations template) {
-        return new RestInvoker(method, uri, template);
+    /**
+     * Offers the option of using an alternative implementation of {@link org.springframework.web.client.RestOperations}.
+     */
+    public RestInvoker using(RestOperations operations) {
+        return new RestInvoker(method, uri, operations);
     }
 
+    /**
+     * Sets the expected type of result.
+     */
     public <T> TypedRestInvoker<T> expecting(Class<T> type) {
         return new TypedRestInvoker(type);
     }
@@ -52,17 +68,23 @@ public class RestInvoker {
     public class TypedRestInvoker<T> {
 
         private final Class<T> type;
-        private MultiValueMap<String,Object> parameters = new LinkedMultiValueMap<String, Object>();
+        private MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 
         private TypedRestInvoker(Class<T> type) {
             this.type = type;
         }
 
+        /**
+         * Sets the given parameter to the given value.
+         */
         public TypedRestInvoker<T> withParam(String name, Object value) {
             parameters.add(name, value);
             return this;
         }
 
+        /**
+         * Executes the request.
+         */
         public T execute() {
             switch (method) {
                 case POST: {

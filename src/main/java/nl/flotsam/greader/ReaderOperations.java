@@ -15,14 +15,43 @@
  */
 package nl.flotsam.greader;
 
+/**
+ * A collection of operations for interacting Google Reader.
+ */
 public interface ReaderOperations {
 
+    /**
+     * Allows you to do an arbitrary request against the Google Reader API, hiding the complexity of keeping an
+     * authentication token allive.
+     *
+     * @param callback The object that is expected to do something useful against the Google Reader API.
+     * @param <T> The result type.
+     * @return The result of the callback.
+     */
     <T> T doWithCallback(ReaderCallback<T> callback);
 
+    /**
+     * Retrieves a token to be included in editing type of calls.
+     */
     String getToken();
 
-    boolean subscribe(String feed, String title, String token);
+    /**
+     * Adds a subscription for the given feed.
+     *
+     * @param feed The URL of the feed to subscribe to.
+     * @param token The token. (See {@link #getToken()}.
+     * @return A boolean indicating if the request succeeded.
+     */
+    boolean subscribe(String feed, String token);
 
+    /**
+     * Tags a subscription with the given tag.
+     *
+     * @param feed The URL of the feed to subscribe to.
+     * @param tag The tag to be set.
+     * @param token The token. (See {@link #getToken()}.
+     * @return A boolean indicating if the request succeeded.
+     */
     boolean tag(String feed, String tag, String token);
 
 }

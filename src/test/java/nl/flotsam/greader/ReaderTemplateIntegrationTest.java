@@ -57,7 +57,7 @@ public class ReaderTemplateIntegrationTest {
     public void shouldAllowForSubscription() {
         ReaderTemplate template = new ReaderTemplate(email, password);
         String token = template.getToken();
-        boolean result = template.subscribe("http://www.martinfowler.com/bliki/bliki.atom", "Martin", token);
+        boolean result = template.subscribe("http://www.martinfowler.com/bliki/bliki.atom", token);
         assertThat(result, is(true));
     }
 
@@ -65,7 +65,7 @@ public class ReaderTemplateIntegrationTest {
     public void shouldAllowForTaggingSubscription() {
         ReaderTemplate template = new ReaderTemplate(email, password);
         String token = template.getToken();
-        template.subscribe("http://www.martinfowler.com/bliki/bliki.atom", "Martin", token);
+        template.subscribe("http://www.martinfowler.com/bliki/bliki.atom", token);
         boolean result = template.tag("http://www.martinfowler.com/bliki/bliki.atom", "scala-tribes", token);
         assertThat(result, is(true));
     }
